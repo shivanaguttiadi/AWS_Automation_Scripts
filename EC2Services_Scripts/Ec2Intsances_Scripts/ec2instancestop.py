@@ -5,7 +5,7 @@ ec2 = boto3.client('ec2')
 
 # Replace 'your-instance-id-1' and 'your-instance-id-2' with the actual instance IDs you want to stop.
 # You can provide multiple instance IDs in the list.
-instance_ids_to_stop = ['i-01ccd888f0ac7f911','i-0071c78e659ff0bb1','i-0a2eb1289c559210e','	i-0c51211db8a6af7c3']
+instance_ids_to_stop = ['i-0669706d9438597dd']
 
 # Stop the EC2 instances
 response = ec2.stop_instances(InstanceIds=instance_ids_to_stop)
