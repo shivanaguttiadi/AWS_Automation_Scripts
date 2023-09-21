@@ -8,7 +8,7 @@ session = boto3.Session()
 apigateway_client = session.client('apigateway')
 
 # Replace the list below with the names of the APIs you want to delete
-apis_to_delete = ['Raghu_TodoApiRest', 'raghu-sam', 'raghu-LambdaRESTStack','raghu-LambdaRESTStack-feature','Raghu_TodoApiRest']
+apis_to_delete = ['TransactionApis', 'sam-app', 'oserverless-swagger-demo','oserverless-swagger-demo','orders_opensearch_crud']
 
 # Delete the specified APIs by name
 deleted_apis = []
