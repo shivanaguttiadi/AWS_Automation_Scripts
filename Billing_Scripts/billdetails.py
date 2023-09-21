@@ -1,5 +1,7 @@
 import boto3
+import pandas as pd
 from tabulate import tabulate
+from datetime import datetime
 
 # Initialize the AWS Cost Explorer client
 ce = boto3.client('ce', region_name='us-east-1')
@@ -26,28 +28,28 @@ response = ce.get_cost_and_usage(
 # Extract the results
 results = response['ResultsByTime']
 
-# Prepare data for tabular format
-table_data = []
+# Create a dictionary to store data by service and region
+cost_data = {}
 
-# Create a header row with the months
-header_row = ["Service", "Region"]
-for result in results:
-    date = result['TimePeriod']['Start']
-    header_row.append(date)
-table_data.append(header_row)
-
-# Populate the table with cost data
+# Populate the dictionary with cost data
 for result in results:
     for group in result['Groups']:
         service = group['Keys'][0]
         region = group['Keys'][1]
         cost = group['Metrics']['BlendedCost']['Amount']
-        row = [service, region]
-        row.extend(['N/A'] * (len(header_row) - 2))  # Fill with 'N/A' for other months
-        row.append(cost)
-        table_data.append(row)
 
-# Create a table and print it
-table = tabulate(table_data, tablefmt="grid")
-print("Cost Estimation by Service and Region (Last 6 Months):")
-print(table)
+        if service not in cost_data:
+            cost_data[service] = {}
+
+        # Convert the timestamp to a month name
+        timestamp = result['TimePeriod']['Start']
+        month_name = datetime.strptime(timestamp, '%Y-%m-%d').strftime('%B')
+
+        cost_data[service][month_name] = cost
+
+# Create a pandas DataFrame from the cost data
+df = pd.DataFrame(cost_data).T.fillna('N/A')
+
+# Print the table
+print("Cost Estimation by Service and Region (Last 6 Months):\n")
+print(tabulate(df, headers='keys', tablefmt='pretty'))
