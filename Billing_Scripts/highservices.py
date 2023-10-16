@@ -10,7 +10,7 @@ end_date = '2023-08-31'
 
 # Specify the granularity and metrics for the estimation
 granularity = 'DAILY'
-metrics = ['UsageQuantity']
+metrics = ['BlendedCost']  # Change to 'UnblendedCost' if needed
 
 # Additional settings for grouping by service and region
 group_by = [{'Type': 'DIMENSION', 'Key': 'SERVICE'}, {'Type': 'DIMENSION', 'Key': 'REGION'}]
@@ -26,36 +26,25 @@ response = ce.get_cost_and_usage(
 # Extract the results
 results = response['ResultsByTime']
 
-# Create a dictionary to store data by service and region
-usage_data = {}
+# Create a list of dictionaries to store high cost data
+high_cost_list = []
 
-# Populate the dictionary with usage data
+# Filter services with high costs
+threshold = 10.0  # Lower threshold for testing
 for result in results:
     for group in result['Groups']:
         service = group['Keys'][0]
         region = group['Keys'][1]
-        usage_quantity = group['Metrics']['UsageQuantity']['Amount']
+        cost = float(group['Metrics']['BlendedCost']['Amount'])
 
-        if service not in usage_data:
-            usage_data[service] = {}
-
-        usage_data[service][region] = usage_quantity
-
-# Create a list of dictionaries to store high usage data
-high_usage_list = []
-
-# Filter services with high usage
-threshold = 100000  # You can adjust this threshold as needed
-for service, regions in usage_data.items():
-    for region, usage_quantity in regions.items():
-        if float(usage_quantity) > threshold:
-            high_usage_list.append([service, region, usage_quantity])
+        if cost > threshold:
+            high_cost_list.append([service, region, cost])
 
 # Define table headers
-headers = ["Service", "Region", "Usage Quantity"]
+headers = ["Service", "Region", "Blended Cost"]
 
 # Print the table in tabular format
-if high_usage_list:
-    print(tabulate(high_usage_list, headers, tablefmt="grid"))
+if high_cost_list:
+    print(tabulate(high_cost_list, headers, tablefmt="grid"))
 else:
-    print("No services with high usage found.")
+    print("No services with high costs found.")

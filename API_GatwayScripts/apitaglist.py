@@ -17,16 +17,18 @@ table_data = []
 for api in apis['items']:
     api_id = api['id']
     api_name = api['name']
-    api_description = api.get('description', '-')
     
     # Check if the API has tags
     tags = apigateway_client.get_tags(resourceArn=f'arn:aws:apigateway:{session.region_name}::/restapis/{api_id}')
     if tags.get('tags'):
         tag_string = ', '.join([f'{key}: {value}' for key, value in tags['tags'].items()])
-        table_data.append([api_id, api_name, api_description, tag_string])
+        table_data.append([api_id, api_name, tag_string])
 
 # Define table headers
-headers = ["API ID", "API Name", "Description", "Tags"]
+headers = ["API ID", "API Name", "Tags"]
+
+# Sort the table_data by the "Tags" column (cost) in descending order
+table_data = sorted(table_data, key=lambda x: x[2], reverse=True)
 
 # Print the table with increased spacing
 print(tabulate(table_data, headers, tablefmt="pretty"))
