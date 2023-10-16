@@ -5,7 +5,7 @@ from prettytable import PrettyTable
 ec2 = boto3.client('ec2')
 
 # Define a list of EC2 instance IDs that you want to start
-instance_ids_to_start = ['i-06545a7cf12708486', 'i-0e314f16caac03c40']  # Replace with your instance IDs
+instance_ids_to_start = ['i-060eff6ce9f491c4f']  # Replace with your instance IDs
 
 # Start the EC2 instances
 response = ec2.start_instances(InstanceIds=instance_ids_to_start)
