@@ -73,4 +73,3 @@ def lambda_handler(event, context):
             Type="String",
             Value=str(export_to_time),
             Overwrite=True)
-view rawcloudwatch-to-s3.py hosted with ❤ by GitHub
